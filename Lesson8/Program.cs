@@ -10,9 +10,10 @@ namespace Lesson8
     public class Exchange
     {
         public string Ccy { get; set; }
-        public string BaseCcy { get; set; }
+        public string BaseCcy { get; set; } = "UAH";
         public decimal Buy { get; set; }
         public decimal Sale { get; set; }
+        public override string ToString() => $"Курс {Ccy}/{BaseCcy}: Покупка - {Buy}, Продажа - {Sale}";
     }
 
     class Program
@@ -25,7 +26,15 @@ namespace Lesson8
             {
                 HttpResponseMessage response = await client.GetAsync(apiUrl);
                 string jsonResponse = await response.Content.ReadAsStringAsync();
-                JArray exchanges = JsonConvert.DeserializeObject<JArray>(jsonResponse);
+                JArray exchangesJson = JArray.Parse(jsonResponse);
+
+                List<Exchange> exchanges = new List<Exchange>();
+
+                foreach (var exchangeJson in exchangesJson)
+                {
+                    Exchange exchange = JsonConvert.DeserializeObject<Exchange>(exchangeJson.ToString());
+                    exchanges.Add(exchange);
+                }
 
                 foreach (var exchange in exchanges)
                 {
